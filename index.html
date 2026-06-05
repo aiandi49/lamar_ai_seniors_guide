@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A Simple Guide to AI Apps – Presented by Lamar Myers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #E8C97A;
+    --gold-pale: #FDF6E3;
+    --dark: #1A1A2E;
+    --charcoal: #2C2C3E;
+    --mid: #4A4A6A;
+    --light: #F8F5EE;
+    --white: #FFFFFF;
+    --accent: #3A7BD5;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--light);
+    color: var(--charcoal);
+    font-size: 17px;
+    line-height: 1.7;
+  }
+
+  /* ── HERO HEADER ── */
+  .hero {
+    background: var(--dark);
+    background-image:
+      radial-gradient(ellipse at 20% 50%, rgba(201,168,76,0.18) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(58,123,213,0.12) 0%, transparent 55%);
+    color: var(--white);
+    padding: 56px 40px 48px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 80px,
+      rgba(201,168,76,0.04) 80px,
+      rgba(201,168,76,0.04) 81px
+    );
+    pointer-events: none;
+  }
+
+  /* ── HERO LOGO ── */
+  .hero-logo-wrap {
+    margin-bottom: 30px;
+    animation: fadeInDown 0.7s ease both;
+  }
+  .hero-logo-btn {
+    display: inline-block;
+    background: none;
+    border: none;
+    cursor: zoom-in;
+    padding: 0;
+    transition: transform 0.3s ease, filter 0.3s ease;
+  }
+  .hero-logo-btn:hover {
+    transform: scale(1.04);
+    filter: drop-shadow(0 0 22px rgba(201,168,76,0.6));
+  }
+  .hero-logo-img {
+    height: 160px;
+    width: auto;
+    border-radius: 16px;
+  }
+  .presenter-label {
+    display: block;
+    margin-top: 12px;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+  }
+  .presenter-label strong { color: var(--gold-light); }
+
+  /* ── LIGHTBOX ── */
+  .lightbox {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.92);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    cursor: zoom-out;
+    backdrop-filter: blur(6px);
+  }
+  .lightbox.open { display: flex; }
+  .lightbox img {
+    max-width: 92vw;
+    max-height: 92vh;
+    border-radius: 18px;
+    box-shadow: 0 0 60px rgba(201,168,76,0.3);
+    animation: lbZoom 0.25s ease both;
+  }
+  .lightbox-close {
+    position: fixed; top: 22px; right: 28px;
+    color: var(--white);
+    font-size: 2.2rem;
+    font-weight: 300;
+    cursor: pointer;
+    line-height: 1;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+  }
+  .lightbox-close:hover { opacity: 1; }
+  @keyframes lbZoom {
+    from { opacity: 0; transform: scale(0.88); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 5vw, 3.4rem);
+    font-weight: 900;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    animation: fadeInUp 0.8s 0.15s ease both;
+  }
+  .hero h1 span {
+    color: var(--gold);
+    display: block;
+  }
+  .hero-sub {
+    margin-top: 16px;
+    font-size: 1.05rem;
+    color: rgba(255,255,255,0.65);
+    max-width: 540px;
+    margin-left: auto;
+    margin-right: auto;
+    animation: fadeInUp 0.8s 0.3s ease both;
+  }
+
+  .gold-divider {
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--gold), var(--gold-light));
+    border-radius: 2px;
+    margin: 24px auto 0;
+    animation: scaleIn 0.6s 0.5s ease both;
+    transform-origin: left;
+  }
+
+  /* ── MAIN LAYOUT ── */
+  .container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* ── SECTION STYLES ── */
+  .section {
+    padding: 52px 0 0;
+  }
+  .section-last { padding-bottom: 60px; }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+  .section-icon {
+    width: 40px; height: 40px;
+    background: var(--dark);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.55rem;
+    font-weight: 700;
+    color: var(--dark);
+  }
+
+  .card {
+    background: var(--white);
+    border-radius: 14px;
+    padding: 28px 32px;
+    box-shadow: 0 2px 16px rgba(26,26,46,0.07);
+    border: 1px solid rgba(201,168,76,0.12);
+  }
+
+  p { margin-bottom: 12px; }
+
+  /* ── AI APPS TABLE ── */
+  .apps-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 8px;
+    font-size: 0.95rem;
+  }
+  .apps-table thead th {
+    background: var(--dark);
+    color: var(--gold-light);
+    font-weight: 600;
+    font-size: 0.8rem;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    padding: 10px 14px;
+    text-align: left;
+  }
+  .apps-table thead th:first-child { border-radius: 8px 0 0 0; }
+  .apps-table thead th:last-child { border-radius: 0 8px 0 0; }
+  .apps-table tbody tr {
+    border-bottom: 1px solid rgba(201,168,76,0.1);
+    transition: background 0.2s;
+  }
+  .apps-table tbody tr:hover { background: var(--gold-pale); }
+  .apps-table tbody tr:last-child { border-bottom: none; }
+  .apps-table td { padding: 12px 14px; vertical-align: middle; }
+  .apps-table td a {
+    color: var(--accent);
+    font-weight: 500;
+    text-decoration: none;
+  }
+  .apps-table td a:hover { text-decoration: underline; }
+  .app-name { font-weight: 600; color: var(--dark); }
+  .best-badge {
+    display: inline-block;
+    background: var(--gold-pale);
+    border: 1px solid var(--gold);
+    color: var(--dark);
+    font-size: 0.78rem;
+    font-weight: 500;
+    padding: 3px 9px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+
+  /* ── STEPS ── */
+  .steps { list-style: none; counter-reset: step-counter; }
+  .steps li {
+    counter-increment: step-counter;
+    padding: 18px 0 18px 60px;
+    position: relative;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+  }
+  .steps li:last-child { border-bottom: none; }
+  .steps li::before {
+    content: counter(step-counter);
+    position: absolute;
+    left: 0; top: 16px;
+    width: 36px; height: 36px;
+    background: var(--dark);
+    color: var(--gold);
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    font-weight: 700;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .steps li strong { display: block; font-size: 1rem; color: var(--dark); margin-bottom: 4px; }
+
+  /* ── BULLETS ── */
+  .bullets { list-style: none; }
+  .bullets li {
+    padding: 7px 0 7px 26px;
+    position: relative;
+    border-bottom: 1px dashed rgba(0,0,0,0.07);
+  }
+  .bullets li:last-child { border-bottom: none; }
+  .bullets li::before {
+    content: '›';
+    position: absolute; left: 6px;
+    color: var(--gold);
+    font-size: 1.2rem;
+    font-weight: 700;
+    line-height: 1.5;
+  }
+
+  /* ── CAPABILITIES GRID ── */
+  .caps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 16px;
+    margin-top: 4px;
+  }
+  .cap-card {
+    background: var(--dark);
+    border-radius: 12px;
+    padding: 20px 18px;
+    color: var(--white);
+  }
+  .cap-icon { font-size: 1.6rem; margin-bottom: 8px; }
+  .cap-title { font-weight: 600; font-size: 0.95rem; color: var(--gold-light); margin-bottom: 4px; }
+  .cap-desc { font-size: 0.85rem; color: rgba(255,255,255,0.65); line-height: 1.5; }
+
+  /* ── TOPIC CARDS ── */
+  .topics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+  }
+  .topic-card {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 20px 22px;
+    border: 1px solid rgba(201,168,76,0.15);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  }
+  .topic-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 900;
+    color: rgba(201,168,76,0.25);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .topic-title { font-weight: 700; color: var(--dark); margin-bottom: 8px; }
+  .topic-prompts { list-style: none; }
+  .topic-prompts li {
+    font-size: 0.88rem;
+    color: var(--mid);
+    padding: 5px 0;
+    border-bottom: 1px dashed rgba(0,0,0,0.07);
+    font-style: italic;
+  }
+  .topic-prompts li:last-child { border-bottom: none; }
+  .topic-prompts li::before { content: '"'; color: var(--gold); font-style: normal; }
+
+  /* ── TIPS ── */
+  .tips-list { list-style: none; }
+  .tips-list li {
+    padding: 16px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.07);
+    display: flex; gap: 14px; align-items: flex-start;
+  }
+  .tips-list li:last-child { border-bottom: none; }
+  .tip-keyword {
+    background: var(--dark);
+    color: var(--gold);
+    font-weight: 700;
+    font-size: 0.8rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  /* ── BUSINESS PLAN ── */
+  .biz-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 16px;
+    margin-top: 4px;
+  }
+  .biz-card {
+    border-radius: 12px;
+    padding: 22px 20px;
+    border: 1px solid rgba(201,168,76,0.2);
+  }
+  .biz-card.dark { background: var(--dark); color: var(--white); }
+  .biz-card.light { background: var(--gold-pale); }
+  .biz-card-title {
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .biz-card.dark .biz-card-title { color: var(--gold-light); }
+  .biz-card.light .biz-card-title { color: var(--charcoal); }
+  .biz-card ul { list-style: none; }
+  .biz-card ul li {
+    padding: 5px 0;
+    font-size: 0.92rem;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+  .biz-card.light ul li { border-bottom-color: rgba(0,0,0,0.07); }
+  .biz-card ul li:last-child { border-bottom: none; }
+  .biz-card.dark ul li { color: rgba(255,255,255,0.8); }
+
+  /* ── FOOTER ── */
+  .footer {
+    background: var(--dark);
+    color: rgba(255,255,255,0.55);
+    text-align: center;
+    padding: 40px 24px;
+    font-size: 0.9rem;
+  }
+  .footer-logo { margin-bottom: 16px; }
+  .footer a { color: var(--gold-light); text-decoration: none; }
+  .footer a:hover { text-decoration: underline; }
+  .footer-tagline {
+    font-family: 'Playfair Display', serif;
+    color: var(--white);
+    font-size: 1rem;
+    margin-bottom: 8px;
+  }
+
+  /* ── NOTES AREA ── */
+  .notes-area {
+    background: var(--white);
+    border: 2px dashed rgba(201,168,76,0.4);
+    border-radius: 12px;
+    padding: 28px 32px;
+    min-height: 160px;
+  }
+  .notes-area p { color: var(--mid); font-style: italic; }
+
+  /* ── SEPARATOR ── */
+  .sep {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 50px 0 0;
+    opacity: 0.35;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes scaleIn {
+    from { transform: scaleX(0); opacity: 0; }
+    to { transform: scaleX(1); opacity: 1; }
+  }
+
+  @media print {
+    .hero { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+  /* ══════════════════════════════════════
+     MOBILE RESPONSIVE  ≤ 640px
+  ══════════════════════════════════════ */
+  @media (max-width: 640px) {
+
+    /* Global center alignment for non-list content */
+    body { font-size: 16px; }
+
+    /* ── Hero ── */
+    .hero { padding: 40px 20px 38px; text-align: center; }
+    .hero-logo-img { height: 130px; }
+    .presenter-label { font-size: 11px; }
+    .hero h1 { font-size: 2.1rem; }
+    .hero-sub { font-size: 0.97rem; }
+
+    /* ── Container & sections ── */
+    .container { padding: 0 16px; }
+    .section { padding: 38px 0 0; }
+
+    /* ── Section headers — center on mobile ── */
+    .section-header {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 8px;
+    }
+    .section-title { font-size: 1.3rem; text-align: center; }
+
+    /* ── Cards — center text except list content ── */
+    .card { padding: 20px 18px; text-align: center; }
+
+    /* Lists inside cards stay left-aligned */
+    .card .bullets,
+    .card .steps,
+    .card .tips-list { text-align: left; }
+
+    /* ── AI Apps table: convert to stacked cards ── */
+    .apps-table thead { display: none; }
+    .apps-table, .apps-table tbody,
+    .apps-table tr, .apps-table td {
+      display: block;
+      width: 100%;
+    }
+    .apps-table tbody tr {
+      border: 1px solid rgba(201,168,76,0.2);
+      border-radius: 10px;
+      margin-bottom: 12px;
+      padding: 12px 14px;
+      background: var(--white);
+    }
+    .apps-table td {
+      padding: 4px 0;
+      border-bottom: none;
+      text-align: center;
+    }
+    .apps-table td:first-child {
+      font-size: 1rem;
+      margin-bottom: 4px;
+    }
+
+    /* ── Capability cards grid — single column ── */
+    .caps-grid {
+      grid-template-columns: 1fr;
+    }
+    .cap-card { text-align: center; }
+
+    /* ── Topic cards grid — single column ── */
+    .topics-grid { grid-template-columns: 1fr; }
+    .topic-card { text-align: center; }
+    /* Topic prompts — centered on mobile */
+    .topic-prompts { text-align: center; }
+    .topic-prompts li::before { display: none; }
+    .topic-prompts li { padding-left: 0; }
+
+    /* ── Tips list ── */
+    .tips-list li {
+      flex-direction: column;
+      gap: 8px;
+      align-items: center;
+      text-align: center;
+    }
+
+    /* ── Business grid — single column, centered ── */
+    .biz-grid { grid-template-columns: 1fr; }
+    .biz-card { text-align: center; }
+    .biz-card ul { text-align: center; }
+    .biz-card ul li { border-bottom-color: rgba(255,255,255,0.07); }
+
+    /* ── Notes area — centered ── */
+    .notes-area { padding: 20px 18px; text-align: center; }
+    .notes-area p { text-align: center; }
+
+    /* ── Steps list — keep left-aligned structure ── */
+    .steps li { padding-left: 50px; }
+    .steps li strong { font-size: 0.97rem; }
+
+    /* ── Bullets — keep left-aligned ── */
+    .bullets li { font-size: 0.95rem; }
+
+    /* ── Footer ── */
+    .footer { padding: 36px 20px; font-size: 0.85rem; }
+    .footer p { line-height: 1.8; }
+
+    /* ── Separator spacing ── */
+    .sep { margin: 36px 0 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════ LIGHTBOX ══════════ -->
+<div class="lightbox" id="logoLightbox" onclick="closeLightbox()">
+  <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
+  <img src="https://mlgmigguhljsiopctkkj.supabase.co/storage/v1/object/public/MY%20PORTFOLIO/LOGOS/lamar_myers_b.png" alt="Lamar Myers Logo – Full View">
+</div>
+
+<!-- ══════════ HERO ══════════ -->
+<header class="hero">
+  <div class="hero-logo-wrap">
+    <button class="hero-logo-btn" onclick="openLightbox()" title="Click to view full size">
+      <img src="https://mlgmigguhljsiopctkkj.supabase.co/storage/v1/object/public/MY%20PORTFOLIO/LOGOS/lamar_myers_b.png"
+           alt="Lamar Myers Logo" class="hero-logo-img">
+    </button>
+    <span class="presenter-label">Presented by <strong>Lamar Myers</strong></span>
+  </div>
+  <h1>A Simple Guide<span>to AI Apps</span></h1>
+  <p class="hero-sub">Empowering seniors in Tucson, AZ &amp; surrounding communities to harness the power of Artificial Intelligence — one question at a time.</p>
+  <div class="gold-divider"></div>
+</header>
+
+<!-- ══════════ BODY ══════════ -->
+<main>
+
+<!-- 1 · WHAT IS AI -->
+<div class="container">
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">🤖</div>
+      <h2 class="section-title">What are AI Apps?</h2>
+    </div>
+    <div class="card">
+      <p>AI Apps are smart tools created by technology companies that can <strong>understand and respond to your questions in plain English.</strong> It's like having a knowledgeable assistant available 24/7 — one you can chat with about a wide range of topics, get answers from, and even have help you with everyday tasks.</p>
+      <p style="margin-bottom:0">No technical background required. If you can type (or speak), you can use AI.</p>
+    </div>
+  </div>
+
+  <div class="sep"></div>
+
+  <!-- 2 · HOW TO OPEN AN ACCOUNT -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">🚀</div>
+      <h2 class="section-title">How to Open a Free Account</h2>
+    </div>
+
+    <!-- Step 1 – Visit the Website -->
+    <div class="card" style="margin-bottom:20px">
+      <p style="font-weight:700; color:var(--dark); font-size:1.05rem; margin-bottom:16px">Step 1 · Visit the Website</p>
+      <table class="apps-table">
+        <thead>
+          <tr>
+            <th>App Name</th>
+            <th>Website</th>
+            <th>Why Use It?</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="app-name">Claude (Anthropic)</span></td>
+            <td><a href="https://claude.ai" target="_blank">claude.ai</a></td>
+            <td><span class="best-badge">Best Overall (no images)</span></td>
+          </tr>
+          <tr>
+            <td><span class="app-name">Gemini (Google)</span></td>
+            <td><a href="https://gemini.google.com" target="_blank">gemini.google.com</a></td>
+            <td><span class="best-badge">Best Value · Great image features</span></td>
+          </tr>
+          <tr>
+            <td><span class="app-name">ChatGPT (OpenAI)</span></td>
+            <td><a href="https://chatgpt.com" target="_blank">chatgpt.com</a></td>
+            <td><span class="best-badge">Most Versatile</span></td>
+          </tr>
+          <tr>
+            <td><span class="app-name">Copilot (Microsoft)</span></td>
+            <td><a href="https://m365.cloud.microsoft.com" target="_blank">m365.cloud.microsoft.com</a></td>
+            <td>Microsoft's version of ChatGPT</td>
+          </tr>
+          <tr>
+            <td><span class="app-name">Perplexity</span></td>
+            <td><a href="https://perplexity.ai" target="_blank">perplexity.ai</a></td>
+            <td><span class="best-badge">Best for Research</span></td>
+          </tr>
+          <tr>
+            <td><span class="app-name">Grok (xAI)</span></td>
+            <td><a href="https://grok.com" target="_blank">grok.com</a></td>
+            <td>Good overall — note: questions may train future models</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Steps 2 & 3 -->
+    <div class="card">
+      <ol class="steps">
+        <li>
+          <strong>Sign Up for an Account</strong>
+          Click the "Sign Up" button on the website. Enter your email address and create a password — or log in with your existing Google, Apple, or Microsoft account. You may need to verify your email by clicking a link or entering a short code.
+        </li>
+        <li>
+          <strong>Access the AI App</strong>
+          Use the app right in your web browser, or download it from the App Store (iPhone/iPad) or Google Play (Android). Once signed in, you're ready to start chatting!
+        </li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="sep"></div>
+
+  <!-- 3 · WHAT CAN AI DO -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">✨</div>
+      <h2 class="section-title">What Can AI Apps Do?</h2>
+    </div>
+    <div class="caps-grid">
+      <div class="cap-card">
+        <div class="cap-icon">💬</div>
+        <div class="cap-title">Answer Questions</div>
+        <div class="cap-desc">Weather, news, recipes, health information, history — ask anything.</div>
+      </div>
+      <div class="cap-card">
+        <div class="cap-icon">✍️</div>
+        <div class="cap-title">Help with Tasks</div>
+        <div class="cap-desc">Write emails, make shopping lists, set reminders, draft letters.</div>
+      </div>
+      <div class="cap-card">
+        <div class="cap-icon">🎭</div>
+        <div class="cap-title">Provide Entertainment</div>
+        <div class="cap-desc">Stories, jokes, trivia quizzes, poems, crossword clues, and more.</div>
+      </div>
+      <div class="cap-card">
+        <div class="cap-icon">📚</div>
+        <div class="cap-title">Learn New Things</div>
+        <div class="cap-desc">Explore history, technology, hobbies, travel, science — at your pace.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sep"></div>
+
+  <!-- 4 · SAMPLE TOPICS -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">💡</div>
+      <h2 class="section-title">Sample Topics &amp; Prompts</h2>
+    </div>
+    <div class="topics-grid">
+      <div class="topic-card">
+        <div class="topic-num">01</div>
+        <div class="topic-title">Health &amp; Wellness</div>
+        <ul class="topic-prompts">
+          <li>What are some exercises suitable for seniors?"</li>
+          <li>Can you give me tips for managing arthritis pain?"</li>
+        </ul>
+      </div>
+      <div class="topic-card">
+        <div class="topic-num">02</div>
+        <div class="topic-title">Cooking &amp; Recipes</div>
+        <ul class="topic-prompts">
+          <li>Share a simple recipe for a healthy soup."</li>
+          <li>What are easy-to-make meals for one person?"</li>
+        </ul>
+      </div>
+      <div class="topic-card">
+        <div class="topic-num">03</div>
+        <div class="topic-title">Technology Help</div>
+        <ul class="topic-prompts">
+          <li>How do I set up my new smartphone?"</li>
+          <li>Explain how to use social media safely."</li>
+        </ul>
+      </div>
+      <div class="topic-card">
+        <div class="topic-num">04</div>
+        <div class="topic-title">Hobbies &amp; Interests</div>
+        <ul class="topic-prompts">
+          <li>Tell me about the history of quilting."</li>
+          <li>What are beginner tips for gardening?"</li>
+        </ul>
+      </div>
+      <div class="topic-card">
+        <div class="topic-num">05</div>
+        <div class="topic-title">Entertainment</div>
+        <ul class="topic-prompts">
+          <li>Share a funny joke."</li>
+          <li>Tell me an interesting fact about the 1960s."</li>
+        </ul>
+      </div>
+      <div class="topic-card">
+        <div class="topic-num">06</div>
+        <div class="topic-title">Daily Living</div>
+        <ul class="topic-prompts">
+          <li>What are some memory exercises I can do daily?"</li>
+          <li>How can I declutter my home effectively?"</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="sep"></div>
+
+  <!-- 5 · TIPS -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">🎯</div>
+      <h2 class="section-title">Tips for Using AI Apps</h2>
+    </div>
+    <div class="card">
+      <ul class="tips-list">
+        <li>
+          <span class="tip-keyword">Be Clear</span>
+          <span>Ask direct questions for the best answers. Short and simple works great!</span>
+        </li>
+        <li>
+          <span class="tip-keyword">Be Specific</span>
+          <span>The more details you provide, the better the response. Instead of "recipe," try "low-sodium soup recipe for two people."</span>
+        </li>
+        <li>
+          <span class="tip-keyword">Explore</span>
+          <span>Try different prompts to discover the full range of what AI Apps can offer. There is no wrong question!</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sep"></div>
+
+  <!-- 6 · GETTING THE MOST OUT -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">🌟</div>
+      <h2 class="section-title">Getting the Most Out of AI Apps</h2>
+    </div>
+    <div class="card">
+      <ul class="bullets">
+        <li>Use AI Apps to stay informed and entertained every single day.</li>
+        <li>Make it a daily habit — explore a new topic each morning with your coffee.</li>
+        <li>Share the experience with friends and family to discover even more uses together.</li>
+        <li>Remember: AI is a <strong>tool that works for you</strong> — it compresses hours of research into minutes.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sep"></div>
+
+  <!-- 7 · BUSINESS / ABOUT LAMAR -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">📋</div>
+      <h2 class="section-title">About This Program</h2>
+    </div>
+    <div class="biz-grid">
+      <div class="biz-card dark">
+        <div class="biz-card-title">What We Offer</div>
+        <ul>
+          <li>Live Q&amp;A sessions at senior centers</li>
+          <li>Hands-on AI demonstrations</li>
+          <li>Personalized guidance at your pace</li>
+          <li>Follow-up support &amp; resources</li>
+        </ul>
+      </div>
+      <div class="biz-card dark">
+        <div class="biz-card-title">Who It's For</div>
+        <ul>
+          <li>Seniors curious about AI tools</li>
+          <li>Anyone who wants to save time</li>
+          <li>Caregivers &amp; family members</li>
+          <li>Senior centers in Tucson &amp; beyond</li>
+        </ul>
+      </div>
+      <div class="biz-card light">
+        <div class="biz-card-title">Service Area</div>
+        <ul>
+          <li>Tucson, Arizona (primary)</li>
+          <li>Green Valley &amp; Sahuarita</li>
+          <li>Marana &amp; Oro Valley</li>
+          <li>Sierra Vista area</li>
+        </ul>
+      </div>
+      <div class="biz-card light">
+        <div class="biz-card-title">Contact Lamar</div>
+        <ul>
+          <li><a href="mailto:ai.agent.lamar@gmail.com" style="color:var(--accent)">ai.agent.lamar@gmail.com</a></li>
+          <li><a href="https://lamar-myers-biz-card.vercel.app/" target="_blank" style="color:var(--accent)">View My Portfolio →</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="sep"></div>
+
+  <!-- 8 · NOTES -->
+  <div class="section section-last">
+    <div class="section-header">
+      <div class="section-icon">📝</div>
+      <h2 class="section-title">Notes</h2>
+    </div>
+    <div class="notes-area">
+      <p>Use this space to jot down questions, interesting prompts, or anything you'd like to remember from today's session.</p>
+    </div>
+  </div>
+
+</div><!-- /container -->
+</main>
+
+<!-- ══════════ FOOTER ══════════ -->
+<footer class="footer">
+  <div class="footer-logo">
+    <a href="https://lamar-myers-biz-card.vercel.app/" target="_blank" rel="noopener">
+      <img src="https://mlgmigguhljsiopctkkj.supabase.co/storage/v1/object/public/MY%20PORTFOLIO/LOGOS/lamar_myers_b.png"
+           alt="Lamar Myers" style="height:64px; width:auto; border-radius:10px; opacity:0.92;">
+    </a>
+  </div>
+  <p class="footer-tagline">Presented by Lamar Myers · AI Guide &amp; Tech Educator</p>
+  <p><a href="mailto:ai.agent.lamar@gmail.com">ai.agent.lamar@gmail.com</a> &nbsp;|&nbsp; <a href="https://lamar-myers-biz-card.vercel.app/" target="_blank">lamar-myers-biz-card.vercel.app</a></p>
+  <p style="margin-top:14px; font-size:0.82rem">Serving senior centers in Tucson, AZ &amp; surrounding communities.</p>
+</footer>
+
+<script>
+  function openLightbox() {
+    document.getElementById('logoLightbox').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeLightbox() {
+    document.getElementById('logoLightbox').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeLightbox();
+  });
+</script>
+</body>
+</html>
